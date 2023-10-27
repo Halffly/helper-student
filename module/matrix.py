@@ -203,6 +203,55 @@ def lambda_matrix(x, x2):
     return result, txt
 
 
+def equation_reverse(matrix, matrix2):
+    m_reverse, txt = matrix_reverse(matrix)
+    m = Matrix(m_reverse)
+    m2 = Matrix(matrix2)
+    c = m * m2
+    r = c.result()
+    txt += f'\n\nУмножение A^(-1)*B\n\n-------------------------\n\n{r[1]}'
+    return r[0], txt
+
+def kramer_method(A, B):
+    # Проверяем, что матрица коэффициентов A квадратная
+    if len(A) != len(A[0]):
+        raise ValueError("Матрица коэффициентов должна быть квадратной")
+
+    # Проверяем, что размер матрицы коэффициентов A совпадает с размером вектора свободных членов B
+    if len(A) != len(B):
+        raise ValueError("Размер матрицы коэффициентов должен совпадать с размером вектора свободных членов")
+
+    # Находим определитель матрицы A
+    det_A, txt = determinant(A)
+
+    # Проверяем, что определитель не равен нулю
+    if det_A == 0:
+        raise ValueError("Система не имеет решений")
+    else:
+        # Создаем пустой список для хранения решений
+        x = []
+
+        # Вычисляем решение для каждой неизвестной
+        for i in range(len(A)):
+            # Создаем копию матрицы коэффициентов A
+            A_copy = [row[:] for row in A]
+
+            # Заменяем i-ый столбец матрицы коэффициентов A на вектор свободных членов B
+            for j in range(len(B)):
+                A_copy[j][i] = B[j][0]
+            # Вычисляем определитель новой матрицы
+            det_A_copy, txt2 = determinant(A_copy)
+            # Вычисляем значение i-ой неизвестной
+            x_i = det_A_copy / det_A
+            txt += '\n\n----------D--------\n\n' + txt2 \
+                + f'\n{det_A_copy} / {det_A}={fraction_denominator(x_i)}'
+
+            # Добавляем значение i-ой неизвестной в список решений
+            x.append(x_i)
+
+        return x, txt
+
+
 def matrix_plus(matrix, matrix2):
     return matrix_plus_or_minus(matrix, matrix2)
 
@@ -238,10 +287,10 @@ class MatrixCombination:
 
     def __init__(self, matrix, matrix2, operator):
         if (
-            operator != 'lambda' and (
+                operator != 'lambda' and (
                 not isinstance(matrix, (Matrix, MatrixCombination)) or
                 not isinstance(matrix2, (Matrix, MatrixCombination))
-            )
+        )
         ):
             raise TypeError("Переданный тип не соотвествует заданым параметрам")
         self._matrix = {
@@ -430,6 +479,12 @@ class Matrix:
             i += 1
 
         return Matrix(array)
+
+    def equation_reverse(self, matrix):
+        return equation_reverse(self.array, matrix)
+
+    def kramer_method(self, matrix):
+        return kramer_method(self.array, matrix)
 
     def determinate(self):
         return determinant(self.array)

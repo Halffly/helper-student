@@ -134,6 +134,32 @@ class TestMathMatrixFromString(unittest.TestCase):
 
         self.assertListEqual([[5.0, 10.0, 0.0], [15.0, 5.0, 10.0], [0.0, 0.0, 15.0]], r[0])
 
+    def test_line_equation_reverse(self):
+        m = Matrix("7,8|5,6")
+        m2 = Matrix("22|16")
+
+        self.assertListEqual([
+            [7, 8], [5, 6]
+        ], m.array)
+
+        self.assertListEqual([
+            [22], [16]
+        ], m2.array)
+
+        c = m.equation_reverse(m2.array)
+
+        self.assertListEqual([
+            [2], [1]
+        ], c[0])
+
+    def test_line_equation_determinant(self):
+        m = Matrix("7,8|5,6")
+        m2 = Matrix('22|16')
+        c = m.kramer_method(m2.array)
+        self.assertListEqual([
+            2, 1
+        ], c[0])
+
 
 if __name__ == '__main__':
     unittest.main()

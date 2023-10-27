@@ -23,6 +23,8 @@ async def mathematica(msg: Message):
         "\n   > + Сложение\n"
         "\n   > - Вычитание\n"
         "\n   > ! Обратная матрица\n"
+        "\n   > !X Линейное уравнение обратная матрица\n"
+        "\n   > X Линейное уравнение методом Крамера\n"
         "a> Тут будет ответ вычеслений ващей матрицы. Пожалуйста не комбинируйте несколько операции в данный "
         "момент доступна толька одна комбинация и система не умеет определять приоритетность")
 
@@ -49,6 +51,20 @@ async def all_text(msg: Message):
                 continue
             if i.endswith('/'):
                 await msg.answer("a> Данная операция еще не реализовано\nm>%s" % i)
+                continue
+            if '!x' in i.lower():
+                leq = i.lower().split("!x")
+                m = Matrix(leq[0])
+                m2 = Matrix(leq[1])
+                c = m.equation_reverse(m2.array)
+                await msg.answer("a> Линейное уравнение было решено по методу обратной матрицы\n\n%s" % c[1])
+                continue
+            if 'x' in i.lower():
+                leq = i.lower().split("x")
+                m = Matrix(leq[0])
+                m2 = Matrix(leq[1])
+                c = m.kramer_method(m2.array)
+                await msg.answer("a> Линейное уравнение было решено по методу Крамера\n\n%s" % c[1])
                 continue
             if i.startswith("e") or i.startswith("е"):
                 l = 2
